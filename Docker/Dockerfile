@@ -5,6 +5,6 @@ RUN cd $GOPATH/src/github.com/simelo && git clone https://github.com/simelo/rext
 RUN cd $GOPATH/src/github.com/simelo/rextporter/cmd/rextporter && go install ./...
 
 
-FROM alpine:latest as final_layer
+FROM alpine:latest as builder
 WORKDIR /bin
 COPY --from=build_layer /go/bin/rextporter .
