@@ -1,0 +1,31 @@
+version: '3.3'
+services:
+
+  sut:
+    build: .
+    dockerfile: Dockerfile.test
+    links:
+      -rextporter
+
+  rextporter:
+    build: .
+    dockerfile: Dockerfile-rextporter.test
+    command: "rextporter -config tomlconfig/main.toml"
+    ports:
+      - "8080:8080"
+
+  skycoin:
+    image: skycoin/skycoin
+    container_name: skycoin
+    ports:
+      - "6420:6420"
+      - "6000:6000"
+    volumes:
+      - skycoin-data:/data/.skycoin
+      - skycoin-wallet:/wallet
+
+volumes:
+  skycoin-data:
+    external: true
+  skycoin-wallet:
+    external: true
