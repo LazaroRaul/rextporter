@@ -5,7 +5,7 @@ services:
     build: .
     dockerfile: Dockerfile.test
     links:
-      -rextporter
+      - rextporter
 
   rextporter:
     build: .
@@ -29,4 +29,6 @@ volumes:
   skycoin-data:
     external: true
   skycoin-wallet:
+    external: true
+  rextporter-config:
     external: true
