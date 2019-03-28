@@ -4,8 +4,8 @@ services:
   rextporter:
     image: rextporter
     volumes:
-      - rextporter-config:/bin/tomlconfig/
-    command: "rextporter -config tomlconfig/main.toml"
+      - rextporter-config:/bin/rextporter-config/
+    command: "rextporter -config rextporter-config/main.toml"
     ports:
       - "8080:8080"
     
