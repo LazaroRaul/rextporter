@@ -7,3 +7,4 @@ docker volume create --driver local \
 
 docker volume create skycoin-data
 docker volume create skycoin-wallet
+docker volume ls
