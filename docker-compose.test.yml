@@ -9,6 +9,7 @@ services:
   rextporter:
     build:
       dockerfile: Dockerfile-rextporter.test
+      context: .
     command: "rextporter -config rextporter-config/main.toml"
     ports:
       - "8080:8080"
