@@ -9,8 +9,6 @@ services:
   rextporter:
     build:
       dockerfile: Dockerfile-rextporter.test
-    volumes:
-      - rextporter-config:/bin/rextporter-config/
     command: "rextporter -config rextporter-config/main.toml"
     ports:
       - "8080:8080"
@@ -29,6 +27,4 @@ volumes:
   skycoin-data:
     external: true
   skycoin-wallet:
-    external: true
-  rextporter-config:
     external: true

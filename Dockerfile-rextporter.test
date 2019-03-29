@@ -8,4 +8,4 @@ RUN cd $GOPATH/src/github.com/simelo/rextporter/cmd/rextporter && go install ./.
 FROM alpine:latest as final_layer
 WORKDIR /bin
 COPY --from=builder /go/bin/rextporter .
-ADD /test/integration/skycoin/tomlconfig ./rextporter-config/
+ADD /test/integration/skycoin/tomlconfig/ ./rextporter-config/
