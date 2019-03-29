@@ -3,7 +3,6 @@ services:
 
   sut:
     build: .
-    dockerfile: Dockerfile.test
     links:
       - rextporter
 
