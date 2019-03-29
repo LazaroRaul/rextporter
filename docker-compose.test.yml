@@ -5,6 +5,7 @@ services:
     build: .
     links:
       - rextporter
+    cmd: "/app/test.sh"
 
   rextporter:
     build:
