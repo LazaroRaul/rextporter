@@ -1,6 +1,5 @@
 #!/bin/bash
 docker volume create --driver local \
-                     --opt type=none \
                      --opt o=bind \
                      --opt device=/test/integration/skycoin/tomlconfig \
                      rextporter-config
