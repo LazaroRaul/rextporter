@@ -6,4 +6,4 @@ WORKDIR /app
 
 ADD /test/test.sh /app/test.sh
 
-CMD ["bash", "test.sh"]
+ENTRYPOINT ["bash", "test.sh"]
