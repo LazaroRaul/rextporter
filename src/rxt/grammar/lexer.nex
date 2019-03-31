@@ -1,0 +1,62 @@
+
+<                     { emit_obj("CTX", rootEnv) }
+/[#].*\n/             { /* eat up comments */ }
+/,[ \n\t]*/           { emit_str("PNC", token()[:1]) }
+/[\n][ \t\n]*/        { indent( token() ) }
+/[ \t]+/              { /* eat up whitespace */ }
+/DATASET|FOR SERVICE|FOR STACK|DEFINE AUTH|AS|SET|TO|GET|POST|FROM|EXTRACT USING|METRIC|NAME|TYPE|GAUGE|COUNTER|HISTOGRAM|SUMMARY|DESCRIPTION|LABELS/ { emit_str("KEY", token()) }
+/"[^"]*"/             { emit_str("STR", token()) }
+/'[^']*'/             { emit_str("STR", token()) }
+/[a-z_][a-z0-9_]*/    { emit_str("VAR", token()) }
+/./                   { emit_str("UNK", token()) }
+>                     { /* nothing to do at end of file */ }
+//
+package grammar
+import "os"
+func LexTheRxt(handler TokenHandler, rootEnv interface{}) {
+  lex := NewLexer(os.Stdin)
+  indent_level := 0
+  indent_stack := make([]int, 5)
+  token := func() string { return lex.Text() }
+  emit_str := handler.EmitStr
+  emit_int := handler.EmitInt
+  emit_obj := handler.EmitObj
+  indent := func(whitespace string) {
+    level := len(whitespace) - 1
+    idx_last_eol := strings.LastIndexByte(whitespace, 10)
+    if idx_last_eol != -1 {
+      level -= idx_last_eol
+    }
+    if level > indent_level {
+      // Open block
+      indent_stack = append(indent_stack, indent_level)
+      indent_level = level
+      emit_int( "BLK" , indent_level )
+    } else {
+      if level == indent_level {
+        // Same block
+        emit_int( "EOL" , indent_level )
+      } else {
+        // Close block
+        if level == 0 && indent_level == 0 {
+          return
+        }
+
+        idx := len(indent_stack)
+        for level < indent_level && idx > 0 {
+          emit_int( "EOB" , indent_level )
+          idx = idx - 1
+          indent_level = indent_stack[idx]
+        }
+        indent_stack = indent_stack[:idx]
+        if level == indent_level {
+          emit_int( "EOL" , indent_level )
+        } else {
+          emit_int( "BIE" , indent_level )
+        }
+      }
+    }
+  }
+  NN_FUN(lex)
+}
+

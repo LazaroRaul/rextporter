@@ -1,0 +1,56 @@
+sudo: required
+dist: trusty
+language: go
+go:
+  - "1.11.x"
+
+services:
+  - docker
+
+before_install:
+  - mkdir /tmp/skydata
+  - wget -c --progress=bar -O /tmp/skydata/blockchain-180.db https://github.com/skycoin/skycoin/raw/develop/src/api/integration/testdata/blockchain-180.db
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then docker container ls ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then docker run --detach --rm --name skycoin-blockchain-180 -v /tmp/skydata:/tmp/skydata -p 6000:6000 -p 6420:6420 skycoin/skycoin:develop -db-path /tmp/skydata/blockchain-180.db -db-read-only=true -disable-networking=false -download-peerlist=false -launch-browser=false -enable-all-api-sets=true ; fi
+  - sleep 5
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then docker images ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then docker container ls ; fi
+
+matrix:
+  include:
+    - os: linux
+      env: VERSION_UPGRADE_TEST_WAIT_TIMEOUT=30s
+    - os: osx
+      # ${TEST_ID}
+      # Do not start osx build for PR
+      if: type != pull_request
+      osx_image: xcode8
+      env: VERSION_UPGRADE_TEST_WAIT_TIMEOUT=30s
+
+install:
+  - if [[ ! -d $GOPATH/src/github.com/simelo/rextporter ]]; then mkdir -p $GOPATH/src/github.com/simelo; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/simelo/rextporter; fi
+  - cd $GOPATH/src/github.com/simelo/rextporter
+  - go get -t ./...
+  - go get github.com/vektra/mockery/.../
+  - make install-linters
+
+
+script:
+  - make lint
+  - make test-386
+  - make test-amd64
+  # Probe Docker container to know it's up and running
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then curl http://localhost:6420/api/v1/network/connections ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then make integration-test-386 ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then make integration-test-amd64 ; fi
+
+after_script:
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then docker images ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then docker container ls ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then docker container stop skycoin-blockchain-180 ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then docker images ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then docker container ls ; fi
+
+notifications:
+  email: false
+  webhooks: https://fathomless-fjord-24024.herokuapp.com/notify

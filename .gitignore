@@ -6,7 +6,25 @@
 *.dylib
 
 # Test binary, build with `go test -c`
-*.test
+# *.test
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+
+# JetBrains IDE
+/.idea/
+
+
+# screen logs
+screenlog.*
+
+# Temp files
+*.swo
+*.swp
+*.orig
+
+
+**/mocks/*
+!**/mocks/.gitkeep
+

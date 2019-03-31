@@ -1,0 +1,30 @@
+version: '3.3'
+services:
+  
+  rextporter:
+    image: rextporter
+    volumes:
+      - rextporter-config:/bin/rextporter-config/
+    command: "rextporter -config rextporter-config/main.toml"
+    ports:
+      - "8080:8080"
+    
+  skycoin:
+    image: skycoin/skycoin
+    container_name: skycoin
+    ports:
+      - "6420:6420"
+      - "6000:6000"
+    volumes:
+      - skycoin-data:/data/.skycoin
+      - skycoin-wallet:/wallet
+      
+  
+
+volumes:
+  skycoin-data:
+    external: true
+  skycoin-wallet:
+    external: true
+  rextporter-config:
+    external: true
