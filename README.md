@@ -1,5 +1,5 @@
 
-# Rextporter
+# Rextporter 2
 
 [![Build Status](https://travis-ci.org/simelo/rextporter.svg?branch=develop)](https://travis-ci.org/simelo/rextporter)
 
